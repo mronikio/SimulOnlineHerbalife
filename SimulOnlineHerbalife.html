@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Pemesanan Herbalife</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4efe9 100%);
+            color: #2c3e50;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        
+        .description {
+            font-size: 16px;
+            opacity: 0.9;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            padding: 20px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .global-discount {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .global-discount label {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .global-discount select {
+            padding: 10px 15px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-success {
+            background: #2ecc71;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #27ae60;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        th {
+            background-color: #3498db;
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        tr:hover {
+            background-color: #e8f4fc;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .summary {
+            padding: 20px;
+            background: #f8f9fa;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .total-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .total-box h3 {
+            margin-bottom: 15px;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        
+        .total-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px dashed #e9ecef;
+        }
+        
+        .total-value {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .grand-total {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+            text-align: right;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #3498db;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-top: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .global-discount {
+                width: 100%;
+            }
+            
+            .buttons {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+            
+            .summary {
+                flex-direction: column;
+            }
+        }
+        
+        .product-column {
+            min-width: 250px;
+        }
+        
+        .quantity-column {
+            width: 100px;
+        }
+        
+        .price-column {
+            width: 150px;
+        }
+        
+        .points-column {
+            width: 100px;
+        }
+        
+        .savings-column {
+            width: 150px;
+        }
+        
+        .action-column {
+            width: 80px;
+        }
+        
+        .delete-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .delete-btn:hover {
+            background: #c0392b;
+        }
+
+        .discount-badge {
+            display: inline-block;
+            background: #ff9900;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-left: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Simulasi Pemesanan Produk Herbalife</h1>
+            <p class="description">Pilih produk dan kuantitas untuk melihat total harga dan poin yang akan Anda dapatkan</p>
+        </header>
+        
+        <div class="controls">
+            <div class="global-discount">
+                <label for="globalDiscount">Diskon Global:</label>
+                <select id="globalDiscount">
+                    <option value="0">0%</option>
+                    <option value="25" selected>25%</option>
+                    <option value="35">35%</option>
+                    <option value="42">42%</option>
+                    <option value="50">50%</option>
+                </select>
+            </div>
+            
+            <div class="buttons">
+                <button class="btn-primary" id="addRow">
+                    <i class="fas fa-plus"></i> Tambah Baris
+                </button>
+                <button class="btn-danger" id="resetAll">
+                    <i class="fas fa-trash"></i> Reset Semua
+                </button>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <table id="orderTable">
+                <thead>
+                    <tr>
+                        <th class="product-column">Produk</th>
+                        <th class="quantity-column">Kuantitas</th>
+                        <th class="price-column">Harga Satuan</th>
+                        <th class="price-column">Total Harga</th>
+                        <th class="points-column">Poin</th>
+                        <th class="savings-column">Penghematan</th>
+                        <th class="action-column">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <!-- Baris akan ditambahkan secara dinamis -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="summary">
+            <div class="total-box">
+                <h3>Ringkasan Pesanan</h3>
+                <div class="total-item">
+                    <span>Total Harga:</span>
+                    <span class="total-value" id="totalPrice">Rp 0</span>
+                </div>
+                <div class="total-item">
+                    <span>Total Poin:</span>
+                    <span class="total-value" id="totalPoints">0</span>
+                </div>
+                <div class="total-item">
+                    <span>Total Penghematan:</span>
+                    <span class="total-value" id="totalSavings">Rp 0</span>
+                </div>
+                <div class="grand-total" id="grandTotal">
+                    Grand Total: Rp 0
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2023 Simulasi Pemesanan Herbalife. Hak Cipta Dilindungi.</p>
+    </footer>
+
+    <script>
+        // Data produk yang telah dikoreksi berdasarkan file terbaru
+        const products = [
+            { id: 1, name: "F1 - FRENCH VANILLA", prices: {0: 614050, 25: 474109, 35: 418131, 42: 378947, 50: 334166}, points: 20 },
+            { id: 2, name: "F1 - DUTCH CHOCOLATE", prices: {0: 614050, 25: 474109, 35: 418131, 42: 378947, 50: 334166}, points: 20 },
+            { id: 3, name: "F1 - WILD BERRY", prices: {0: 614050, 25: 474109, 35: 418131, 42: 378947, 50: 334166}, points: 20 },
+            { id: 4, name: "F1 - MINT CHOCOLATE", prices: {0: 614050, 25: 474109, 35: 418131, 42: 378947, 50: 334166}, points: 20 },
+            { id: 5, name: "F1 - COOKIES IN CREAM", prices: {0: 614050, 25: 474109, 35: 418131, 42: 378947, 50: 334166}, points: 20 },
+            { id: 6, name: "F1 - CAFE LATTE", prices: {0: 614050, 25: 474109, 35: 418131, 42: 378947, 50: 334166}, points: 20 },
+            { id: 7, name: "H24 - RS PRO", prices: {0: 1345430, 25: 1074896, 35: 966682, 42: 890933, 50: 804362}, points: 39.65 },
+            { id: 8, name: "HERBAL TEA CONCENTRATE ORIGINAL", prices: {0: 577760, 25: 446192, 35: 393567, 42: 356730, 50: 314630}, points: 21.5 },
+            { id: 9, name: "HERBAL TEA CONCENTRATE HONEY GINGER", prices: {0: 577760, 25: 446192, 35: 393567, 42: 356730, 50: 314630}, points: 21.5 },
+            { id: 10, name: "GREENTEA POMEGRANATE", prices: {0: 751800, 25: 580586, 35: 512099, 42: 464158, 50: 409368}, points: 28.25 },
+            { id: 11, name: "CELL-U-LOSS", prices: {0: 345540, 25: 266844, 35: 235364, 42: 213329, 50: 188145}, points: 15.75 },
+            { id: 12, name: "NRG INSTANT TEA", prices: {0: 379290, 25: 292901, 35: 258347, 42: 234159, 50: 206516}, points: 14.75 },
+            { id: 13, name: "HAC ORIGINAL - ALOEVERA ORIGINAL", prices: {0: 565430, 25: 436674, 35: 385170, 42: 349117, 50: 307914}, points: 24.95 },
+            { id: 14, name: "HAC MANGO - MANGO FLAVOUR", prices: {0: 565430, 25: 436674, 35: 385170, 42: 349117, 50: 307914}, points: 24.95 },
+            { id: 15, name: "HAC MANDARIN - ORANGE FLAVOUR", prices: {0: 565430, 25: 436674, 35: 385170, 42: 349117, 50: 307914}, points: 24.95 },
+            { id: 16, name: "HERBALIFE LINE 1000", prices: {0: 710070, 25: 548368, 35: 483688, 42: 438412, 50: 386669}, points: 25.75 },
+            { id: 17, name: "F2 - MULTIVITAMIN, MINERAL & HERBAL TABLET", prices: {0: 657230, 25: 507575, 35: 447713, 42: 405809, 50: 357920}, points: 24.7 },
+            { id: 18, name: "F3 - PPP", prices: {0: 576310, 25: 445082, 35: 392590, 42: 355846, 50: 313853}, points: 17.95 },
+            { id: 19, name: "NITEWORKS", prices: {0: 907090, 25: 700521, 35: 617893, 42: 560053, 50: 493950}, points: 29.9 },
+            { id: 20, name: "HERBALIFE MIXED FIBER - APPLE", prices: {0: 507490, 25: 391913, 35: 345682, 42: 313320, 50: 276335}, points: 22.95 },
+            { id: 21, name: "NUTRITION ACTIVATE", prices: {0: 589850, 25: 455516, 35: 401781, 42: 364167, 50: 321179}, points: 21.95 },
+            { id: 22, name: "COLLAGEN PLUS POWDER", prices: {0: 1234990, 25: 953740, 35: 841241, 42: 762492, 50: 672494}, points: 43.55 },
+            { id: 23, name: "IMMUNOTUMERIC", prices: {0: 581090, 25: 448745, 35: 395809, 42: 358754, 50: 316406}, points: 22.3 },
+            { id: 24, name: "IMMULIFT", prices: {0: 681540, 25: 526584, 35: 464602, 42: 421214, 50: 371628}, points: 26.5 },
+            { id: 25, name: "SKIN SOOTHING ALOE CLEANSER", prices: {0: 421130, 25: 325230, 35: 286868, 42: 260015, 50: 229326}, points: 16.75 },
+            { id: 26, name: "SKIN POLISHING CITRUS CLEANSER", prices: {0: 421130, 25: 325230, 35: 286868, 42: 260015, 50: 229326}, points: 16.75 },
+            { id: 27, name: "SKIN ENERGIZING HERBAL TOWER", prices: {0: 321350, 25: 248640, 35: 219558, 42: 199201, 50: 175935}, points: 12.7 },
+            { id: 28, name: "SKIN LINE MINIMIZING SERUM", prices: {0: 947500, 25: 731740, 35: 645437, 42: 585026, 50: 515984}, points: 37.7 },
+            { id: 29, name: "SKIN DAILY GLOW MOISTURIZER", prices: {0: 711400, 25: 549395, 35: 484593, 42: 439231, 50: 387390}, points: 28.4 },
+            { id: 30, name: "SKIN INSTANT REVEAL BERRY SCRUB", prices: {0: 332110, 25: 256493, 35: 226246, 42: 205073, 50: 180875}, points: 13.1 },
+            { id: 31, name: "SKIN PURIFYING MINT CLAY MASK", prices: {0: 357750, 25: 276279, 35: 243689, 42: 220877, 50: 194805}, points: 14.2 },
+            { id: 32, name: "SKIN REPLENISHING NIGHT CREAM", prices: {0: 711400, 25: 549395, 35: 484593, 42: 439231, 50: 387390}, points: 28.4 },
+            { id: 33, name: "SKIN SPF30/PA PROTECTIVE MOIST", prices: {0: 711400, 25: 549395, 35: 484593, 42: 439231, 50: 387390}, points: 28.4 },
+            { id: 34, name: "SKIN ENERGIZING HERBAL TOWER 150ML", prices: {0: 817960, 25: 631701, 35: 557198, 42: 505046, 50: 445443}, points: 32.3 },
+            { id: 35, name: "SKIN BASIC PROGRAM", prices: {0: 2586410, 25: 1997889, 35: 1762480, 42: 1597694, 50: 1409367}, points: 103 },
+            { id: 36, name: "HERBAL ALOE SOOTHING GEL", prices: {0: 236210, 25: 182429, 35: 160917, 42: 145858, 50: 128649}, points: 8.3 },
+            { id: 37, name: "HERBAL ALOE HAND & BODY WASH", prices: {0: 236210, 25: 182429, 35: 160917, 42: 145858, 50: 128649}, points: 8.3 },
+            { id: 38, name: "HERBAL ALOE HAND & BODY CREAM", prices: {0: 236210, 25: 182429, 35: 160917, 42: 145858, 50: 128649}, points: 8.3 },
+            { id: 39, name: "HMP - MEMBER KIT", prices: {0: 606060, 25: 606060, 35: 606060, 42: 606060, 50: 606060}, points: 0 }
+        ];
+
+        // Format angka ke format Rupiah
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+        }
+
+        // Variabel global untuk diskon
+        let globalDiscount = 25;
+
+        // Fungsi untuk menambah baris
+        function addRow() {
+            const tbody = document.getElementById('tableBody');
+            const newRow = document.createElement('tr');
+            
+            newRow.innerHTML = `
+                <td>
+                    <select class="product-select">
+                        <option value="">Pilih Produk</option>
+                        ${products.map(p => `<option value="${p.id}">${p.name}</option>`).join('')}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="quantity-input" min="0" value="1">
+                </td>
+                <td class="unit-price">Rp 0</td>
+                <td class="total-price">Rp 0</td>
+                <td class="points">0</td>
+                <td class="savings">Rp 0</td>
+                <td>
+                    <button class="delete-btn"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            
+            tbody.appendChild(newRow);
+            
+            // Tambahkan event listeners
+            newRow.querySelector('.product-select').addEventListener('change', updateRow);
+            newRow.querySelector('.quantity-input').addEventListener('input', updateRow);
+            newRow.querySelector('.delete-btn').addEventListener('click', function() {
+                newRow.remove();
+                updateSummary();
+            });
+            
+            updateRow.call(newRow);
+        }
+
+        // Fungsi untuk mengupdate baris
+        function updateRow() {
+            const row = this.closest('tr');
+            const productSelect = row.querySelector('.product-select');
+            const quantityInput = row.querySelector('.quantity-input');
+            const unitPriceCell = row.querySelector('.unit-price');
+            const totalPriceCell = row.querySelector('.total-price');
+            const pointsCell = row.querySelector('.points');
+            const savingsCell = row.querySelector('.savings');
+            
+            const productId = parseInt(productSelect.value);
+            const quantity = parseInt(quantityInput.value) || 0;
+            
+            if (productId && quantity > 0) {
+                const product = products.find(p => p.id === productId);
+                const unitPrice = product.prices[globalDiscount] || 0;
+                const totalPrice = unitPrice * quantity;
+                const points = product.points * quantity;
+                const originalPrice = product.prices[0] * quantity;
+                const savings = originalPrice - totalPrice;
+                
+                unitPriceCell.textContent = formatRupiah(unitPrice);
+                totalPriceCell.textContent = formatRupiah(totalPrice);
+                pointsCell.textContent = points.toFixed(2);
+                savingsCell.textContent = formatRupiah(savings);
+            } else {
+                unitPriceCell.textContent = 'Rp 0';
+                totalPriceCell.textContent = 'Rp 0';
+                pointsCell.textContent = '0';
+                savingsCell.textContent = 'Rp 0';
+            }
+            
+            updateSummary();
+        }
+
+        // Fungsi untuk mengupdate ringkasan
+        function updateSummary() {
+            let totalPrice = 0;
+            let totalPoints = 0;
+            let totalSavings = 0;
+            
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                const totalPriceText = row.querySelector('.total-price').textContent;
+                const pointsText = row.querySelector('.points').textContent;
+                const savingsText = row.querySelector('.savings').textContent;
+                
+                if (totalPriceText !== 'Rp 0') {
+                    totalPrice += parseInt(totalPriceText.replace(/\D/g, ''));
+                    totalPoints += parseFloat(pointsText);
+                    totalSavings += parseInt(savingsText.replace(/\D/g, ''));
+                }
+            });
+            
+            document.getElementById('totalPrice').textContent = formatRupiah(totalPrice);
+            document.getElementById('totalPoints').textContent = totalPoints.toFixed(2);
+            document.getElementById('totalSavings').textContent = formatRupiah(totalSavings);
+            document.getElementById('grandTotal').textContent = `Grand Total: ${formatRupiah(totalPrice)}`;
+            
+            // Update badge diskon di header
+            document.querySelector('header h1').innerHTML = `Simulasi Pemesanan Produk Herbalife <span class="discount-badge">Diskon ${globalDiscount}%</span>`;
+        }
+
+        // Fungsi untuk reset semua
+        function resetAll() {
+            if (confirm('Apakah Anda yakin ingin menghapus semua data?')) {
+                document.getElementById('tableBody').innerHTML = '';
+                updateSummary();
+                addRow(); // Tambahkan baris kosong setelah reset
+            }
+        }
+
+        // Fungsi untuk mengupdate diskon global
+        function updateGlobalDiscount() {
+            globalDiscount = parseInt(document.getElementById('globalDiscount').value);
+            
+            // Update semua baris dengan diskon baru
+            document.querySelectorAll('#tableBody tr').forEach(row => {
+                updateRow.call(row.querySelector('.product-select'));
+            });
+            
+            updateSummary();
+        }
+
+        // Inisialisasi saat halaman dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            // Tambahkan event listeners
+            document.getElementById('addRow').addEventListener('click', addRow);
+            document.getElementById('resetAll').addEventListener('click', resetAll);
+            document.getElementById('globalDiscount').addEventListener('change', updateGlobalDiscount);
+            
+            // Tambahkan baris pertama
+            addRow();
+            
+            // Update summary untuk pertama kali
+            updateSummary();
+        });
+    </script>
+</body>
+</html>
